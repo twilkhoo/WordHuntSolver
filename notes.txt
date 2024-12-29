@@ -1,0 +1,16 @@
+Approach 1:
+
+Backtrack, build all possible words (12029640), and then look up
+each of these words in the dictionary.
+
+
+
+
+
+Approach 2:
+Build a trie of all english words once, then recursively backtrack.
+The advantage that this has is that we can break early in the backtracking.
+E.g. if we know there is no valid word starting with abcd, we won't check abcd____...
+This is because the trie will indicate no more words, so we can end the current search and backtrack from the previous spot.
+
+
