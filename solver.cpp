@@ -24,7 +24,7 @@ struct EnglishWordTrie {
   EnglishWordTrie(std::string inputFile) : root(std::make_shared<TrieNode>(0)) {
     // First, create the trie based on the dictionary words.
     std::ifstream file(
-        inputFile);  // Replace "example.txt" with your file's name
+        inputFile);
     if (!file) throw std::runtime_error("Error opening the file!");
 
     std::string word;
@@ -196,7 +196,7 @@ int main() {
                                        {'m', 'n', 'o', 'p'}};
 
   // We want to convert this grid into a trie.
-  EnglishWordTrie trie("words_alpha.txt");
+  EnglishWordTrie trie("../assets/words_alpha.txt");
 
   // Now that we have a trie, lookup all possible strings to see if we have
   // valid words.
