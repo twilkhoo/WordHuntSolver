@@ -2,9 +2,11 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <stack>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -49,6 +51,8 @@ struct EnglishWordTrie {
 class Solver {
   size_t numRows;
   size_t numCols;
+
+  std::mutex foundWordsMutex;
 
   std::vector<std::vector<std::pair<char, size_t>>> foundWords;
   std::vector<std::pair<char, size_t>> curWord;
@@ -133,7 +137,10 @@ class Solver {
       curWord.emplace_back(c, idx);
 
       // Found a word.
-      if (nextNode->end) foundWords.push_back(curWord);
+      if (nextNode->end) {
+        std::lock_guard<std::mutex> lock(foundWordsMutex);
+        foundWords.push_back(curWord);
+      }
 
       // Add neighbors.
       for (int i = -1; i <= 1; i++) {
@@ -160,11 +167,18 @@ class Solver {
   Solver(const std::vector<std::vector<char>>& board,
          const EnglishWordTrie& trie)
       : numRows{board.size()}, numCols{board[0].size()} {
+    std::vector<std::thread> threads;
+    threads.reserve(numRows * numCols);
 
     for (size_t row = 0; row < numRows; row++) {
       for (size_t col = 0; col < numCols; col++) {
-        iterativeFind(board, trie.root, row, col);
+        threads.emplace_back(
+            [&, row, col] { iterativeFind(board, trie.root, row, col); });
       }
+    }
+
+    for (auto& t : threads) {
+      t.join();
     }
   }
 
