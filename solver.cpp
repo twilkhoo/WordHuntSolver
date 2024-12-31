@@ -42,47 +42,7 @@ EnglishWordTrie::EnglishWordTrie(std::string inputFile)
   file.close();
 }
 
-void Solution::recurseFind(
-    const std::vector<std::vector<char>>& board,
-    const std::shared_ptr<EnglishWordTrie::TrieNode> curNode, const size_t row,
-    const size_t col) {
-  // Base case- this node doesn't exist.
-  if (!curNode) return;
-
-  // Base case- we've already visited this cell.
-  size_t idx = row * numRows + col;
-  if (seen.contains(idx)) return;
-
-  // Check if we can proceed in our search with our current board char.
-  auto nextNode = curNode->children[board[row][col] - 'a'];
-  if (!nextNode) return;
-
-  // If we've got this far, we can continue.
-  seen.insert(idx);
-  curWord.emplace_back(board[row][col], idx);
-
-  // See if our current spot has a word.
-  if (nextNode->end) foundWords.push_back(curWord);
-
-  // Recursively check neighbors.
-  for (int i = static_cast<int>(row) - 1; i <= static_cast<int>(row) + 1; i++) {
-    for (int j = static_cast<int>(col) - 1; j <= static_cast<int>(col) + 1;
-         j++) {
-      // Ensure the neighbour is in range.
-      if (i < 0 || i >= numRows || j < 0 || j >= numCols) continue;
-
-      // Don't access the current cell again.
-      if (i == row && j == col) continue;
-
-      recurseFind(board, nextNode, i, j);
-    }
-  }
-
-  seen.erase(idx);
-  curWord.pop_back();
-}
-
-void Solution::iterativeFind(
+void WordFinder::iterativeFind(
     const std::vector<std::vector<char>>& board,
     const std::shared_ptr<EnglishWordTrie::TrieNode> rootNode,
     const size_t startRow, const size_t startCol) {
@@ -147,7 +107,7 @@ void Solution::iterativeFind(
   }
 }
 
-Solution::Solution(const std::vector<std::vector<char>>& board,
+WordFinder::WordFinder(const std::vector<std::vector<char>>& board,
                    const EnglishWordTrie& trie)
     : numRows{board.size()}, numCols{board[0].size()} {
   std::vector<std::thread> threads;
@@ -163,9 +123,17 @@ Solution::Solution(const std::vector<std::vector<char>>& board,
   for (auto& t : threads) {
     t.join();
   }
+
+  sort(foundWords.begin(), foundWords.end(),
+       [&](const std::vector<std::pair<char, size_t>>& lhs,
+           const std::vector<std::pair<char, size_t>>& rhs) {
+         return lhs.size() >
+                rhs.size();  // Sort in descending-by-length order (longer words
+                             // are worth more, and are placed first).
+       });
 }
 
-std::vector<std::vector<std::pair<char, size_t>>> Solution::getFoundWords()
+std::vector<std::vector<std::pair<char, size_t>>> WordFinder::getFoundWords()
     const {
   return foundWords;
 }

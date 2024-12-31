@@ -28,7 +28,7 @@ struct EnglishWordTrie {
   EnglishWordTrie(std::string inputFile);
 };
 
-class Solution {
+class WordFinder {
   // Board dimensions.
   size_t numRows;
   size_t numCols;
@@ -44,17 +44,8 @@ class Solution {
                      const std::shared_ptr<EnglishWordTrie::TrieNode> rootNode,
                      const size_t startRow, const size_t startCol);
 
-  // DEPRECATED: The following methods/attributes have been deprecated.
-  std::vector<std::pair<char, size_t>> curWord;
-  std::unordered_set<size_t> seen;
-
-  // Maintain invariant of board[row][col] always being valid.
-  void recurseFind(const std::vector<std::vector<char>>& board,
-                   const std::shared_ptr<EnglishWordTrie::TrieNode> curNode,
-                   const size_t row, const size_t col);
-
  public:
-  Solution(const std::vector<std::vector<char>>& board,
+  WordFinder(const std::vector<std::vector<char>>& board,
          const EnglishWordTrie& trie);
 
   std::vector<std::vector<std::pair<char, size_t>>> getFoundWords() const;

@@ -18,7 +18,7 @@ int main() {
   // Now that we have a trie, lookup all possible strings to see if we have
   // valid words.
   auto start = std::chrono::high_resolution_clock::now();
-  Solver::Solution s(board, trie);
+  Solver::WordFinder s(board, trie);
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsedTime = end - start;
 
