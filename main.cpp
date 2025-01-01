@@ -7,11 +7,12 @@
 int main() {
   // A 4x4 input board, as a 2d char arr.
   // Must contain lowercase alphabetical chars.
-  std::vector<std::vector<char>> board{{'a', 'b', 'c', 'd'},
-                                       {'e', 'f', 'g', 'h'},
-                                       {'i', 'j', 'k', 'l'},
-                                       {'m', 'n', 'o', 'p'}};
+  // std::vector<std::vector<char>> board{{'a', 'b', 'c', 'd'},
+  //                                      {'e', 'f', 'g', 'h'},
+  //                                      {'i', 'j', 'k', 'l'},
+  //                                      {'m', 'n', 'o', 'p'}};
 
+  std::vector<std::vector<char>> board{{'h','e','l','l','o'}};
   // We want to convert this grid into a trie.
   Solver::EnglishWordTrie trie("../assets/words_alpha.txt");
 
