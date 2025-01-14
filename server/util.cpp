@@ -65,7 +65,7 @@ bool ServerUtil::handleClient() {
   // Clear the buffer and read data from the client
   memset(buffer, 0, BUFFER_SIZE);
 
-  std::cout << "Reading" << std::endl;
+  std::cout << "Reading\n";
 
   // Read the HTTP request from the client.
   ssize_t bytes_read = read(clientFd, buffer, BUFFER_SIZE - 1);
@@ -73,17 +73,17 @@ bool ServerUtil::handleClient() {
     close(clientFd);
     return false;
   }
-  std::cout << "Done read." << std::endl;
+  std::cout << "Done read.\n";
 
   std::string bufferStr(buffer, bytes_read);
 
-  std::cout << "Message received: " << bufferStr << std::endl;
+  std::cout << "Message received: " << bufferStr << "\n";
 
   // Parse the first line (the GET request).
   std::size_t endOfLine = bufferStr.find("\r\n");
   if (endOfLine == std::string::npos) {
     // If we can't find "\r\n", the request is malformed
-    std::cout << "Malformed request (no first line found)." << std::endl;
+    std::cout << "Malformed request (no first line found).\n";
     return false;
   }
   std::string firstLine = bufferStr.substr(0, endOfLine);
@@ -97,7 +97,7 @@ bool ServerUtil::handleClient() {
   std::string version;
 
   if (!(lineStream >> method >> path >> version)) {
-    std::cout << "Malformed request line." << std::endl;
+    std::cout << "Malformed request line.\n";
     return false;
   }
 
@@ -106,7 +106,7 @@ bool ServerUtil::handleClient() {
     return 1;
   }
 
-  std::cout << "path we got is: " << path << std::endl;
+  std::cout << "path we got is: " << path << "\n";
 
   // Form the board based on the comma separated string.
   if (!path.empty() && path[0] == '/') {
@@ -162,11 +162,11 @@ bool ServerUtil::handleClient() {
   // Solve the board using the solver.
   Solver::WordFinder s(grid, trie);
 
-  std::cout << s.getFoundWords().size() << std::endl;
+  std::cout << s.getFoundWords().size() << "\n";
 
   write(clientFd, invalid_response, strlen(invalid_response));
 
-  std::cout << "Closing client socket" << std::endl;
+  std::cout << "Closing client socket.\n";
   // Close the client socket
   close(clientFd);
 

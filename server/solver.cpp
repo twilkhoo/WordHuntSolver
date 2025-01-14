@@ -22,9 +22,8 @@ EnglishWordTrie::EnglishWordTrie(std::string inputFile)
   if (!file) throw std::runtime_error("Error opening the file!");
 
   std::string word;
+  std::cout << "Parsing trie...\n";
   while (std::getline(file, word)) {
-    std::cout << word << std::endl;
-
     word.pop_back();  // Remove the carriage return.
 
     // Add the word into the trie, letter by letter.
@@ -37,6 +36,7 @@ EnglishWordTrie::EnglishWordTrie(std::string inputFile)
     }
     curNode->end = true;
   }
+  std::cout << "Done parsing trie.\n";
 
   file.close();
 }

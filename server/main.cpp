@@ -23,7 +23,7 @@ int main() {
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsedTime = end - start;
 
-  std::cout << s.getFoundWords().size() << std::endl;
+  std::cout << s.getFoundWords().size() << "\n";
 
-  std::cout << "Time taken: " << elapsedTime.count() << std::endl;
+  std::cout << "Time taken: " << elapsedTime.count() << "\n";
 }

@@ -4,6 +4,7 @@
 #include <tuple>
 
 #include "solver.h"
+#include <arpa/inet.h>
 
 #define MAX_PORT_NO 99999
 #define BUFFER_SIZE 1024

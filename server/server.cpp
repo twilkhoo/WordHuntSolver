@@ -35,18 +35,16 @@ int main(int argc, char** argv) {
   if (!serverObj.listenConn())
     throw std::runtime_error("Error in listening for clients.");
 
-  std::cout << "Server listening on port " << port << std::endl;
+  std::cout << "Server listening on port " << port << "\n";
 
   while (1) {
     // Accept a client connection.
-    std::cout << "loop started" << std::endl;
-
     if (!serverObj.acceptConn()) continue;
 
-    std::cout << "Accepted a client." << std::endl;
+    std::cout << "Accepted a client.\n";
 
     if (!serverObj.handleClient()) {
-      std::cout << "Error in processing this client." << std::endl;
+      std::cout << "Error in processing this client.\n";
     }
   }
 
