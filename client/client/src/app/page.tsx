@@ -43,6 +43,20 @@ export default function Home() {
     }
   }
 
+  const handleServerAlgo = async () => {
+    
+    const testStr = 'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p'
+    
+    try {
+      // Fetch the homepage content from localhost:3000
+      const response = await fetch("http://localhost:5000/" + testStr);
+      const data = await response.text();
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <h1>4×4 Board (TypeScript)</h1>
@@ -69,6 +83,7 @@ export default function Home() {
         Console Log
       </button>
       <button onClick={handleClick}>Homepage Response</button>
+      <button onClick={handleServerAlgo}>Server test</button>
     </div>
   );
 }

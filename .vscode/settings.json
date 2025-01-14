@@ -50,6 +50,11 @@
     "ratio": "cpp",
     "thread": "cpp",
     "condition_variable": "cpp",
-    "mutex": "cpp"
+    "mutex": "cpp",
+    "codecvt": "cpp",
+    "map": "cpp",
+    "set": "cpp",
+    "iomanip": "cpp",
+    "filesystem": "cpp"
   }
 }

@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add the executable
 add_executable(solver 
   solver.cpp
-  main.cpp
+  util.cpp
+  server.cpp
 )
 
 # Link pthread library
