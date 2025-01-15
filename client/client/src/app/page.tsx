@@ -45,7 +45,7 @@ export default function Home() {
 
   const handleServerAlgo = async () => {
     
-    const testStr = 'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p'
+    const testStr = 'abcd,efgh,ijkl,mnop'
     
     try {
       // Fetch the homepage content from localhost:3000

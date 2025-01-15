@@ -42,7 +42,7 @@ bool ServerUtil::bindToPort() {
   address.sin_addr.s_addr = INADDR_ANY;
   address.sin_port = htons(port);
 
-  if (bind(serverFd, (struct sockaddr *)&address, sizeof(address)) < 0)
+  if (bind(serverFd, (struct sockaddr*)&address, sizeof(address)) < 0)
     return false;
   return true;
 }
@@ -55,8 +55,45 @@ bool ServerUtil::listenConn() {
 bool ServerUtil::acceptConn() {
   socklen_t addrLen = sizeof(address);
 
-  clientFd = accept(serverFd, (struct sockaddr *)&address, &addrLen);
+  clientFd = accept(serverFd, (struct sockaddr*)&address, &addrLen);
   if (clientFd < 0) return false;
+
+  return true;
+}
+
+void ServerUtil::writeError() {
+  write(clientFd, invalid_response, strlen(invalid_response));
+}
+
+bool ServerUtil::parseGetPath(const std::string& path,
+                              std::vector<std::vector<char>>& grid) {
+  // Path is of form "abcd,efgh,ijkl,mnop.
+  // Split by commas into lines.
+  std::vector<std::string> boardRowStrs;
+  std::stringstream ss(path);
+  std::string piece;
+  while (std::getline(ss, piece, ',')) {
+    boardRowStrs.push_back(piece);
+  }
+
+  // Verify that each row has the same number of characters (must be
+  // rectangular).
+  size_t rowSize = boardRowStrs[0].size();
+  for (const auto& row : boardRowStrs) {
+    if (row.size() != rowSize) {
+      std::cout << "Invalid input, requires rectangular board.\n";
+      return false;
+    }
+  }
+
+  // Split the row chars into vectors, creating the 2d grid.
+  for (const auto& row : boardRowStrs) {
+    std::vector<char> rowChars;
+    for (char c : row) {
+      rowChars.push_back(c);
+    }
+    grid.push_back(rowChars);
+  }
 
   return true;
 }
@@ -70,6 +107,7 @@ bool ServerUtil::handleClient() {
   // Read the HTTP request from the client.
   ssize_t bytes_read = read(clientFd, buffer, BUFFER_SIZE - 1);
   if (bytes_read <= 0) {
+    writeError();
     close(clientFd);
     return false;
   }
@@ -82,8 +120,8 @@ bool ServerUtil::handleClient() {
   // Parse the first line (the GET request).
   std::size_t endOfLine = bufferStr.find("\r\n");
   if (endOfLine == std::string::npos) {
-    // If we can't find "\r\n", the request is malformed
-    std::cout << "Malformed request (no first line found).\n";
+    std::cout << "Inavlid request (no first line found).\n";
+    writeError();
     return false;
   }
   std::string firstLine = bufferStr.substr(0, endOfLine);
@@ -97,58 +135,29 @@ bool ServerUtil::handleClient() {
   std::string version;
 
   if (!(lineStream >> method >> path >> version)) {
-    std::cout << "Malformed request line.\n";
+    std::cout << "Invalid request line.\n";
+    writeError();
     return false;
   }
 
   if (method != "GET") {
     std::cout << "Unsupported HTTP method: " << method << "\n";
-    return 1;
+    writeError();
+    return false;
   }
 
-  std::cout << "path we got is: " << path << "\n";
+  std::cout << "Path we got is: " << path << "\n";
 
   // Form the board based on the comma separated string.
   if (!path.empty() && path[0] == '/') {
     path = path.substr(1);  // remove the first character '/'
   }
 
-  // 2) Split by commas into tokens
-  std::vector<std::string> tokens;
-  {
-    std::stringstream ss(path);
-    std::string piece;
-    while (std::getline(ss, piece, ',')) {
-      // e.g. piece could be "a", "b", ..., or "kl"
-      tokens.push_back(piece);
-    }
-  }
-
-  // 3) Flatten tokens into individual chars.
-  //    For example, "kl" becomes 'k' and 'l'
-  std::vector<char> allChars;
-  for (const auto &tok : tokens) {
-    for (char c : tok) {
-      allChars.push_back(c);
-    }
-  }
-
-  // We expect exactly 16 chars (4x4). Check (optional).
-  if (allChars.size() != 16) {
-    std::cerr << "Error: we got " << allChars.size()
-              << " characters, expected 16.\n";
-    return 1;
-  }
-
-  // 4) Put them in a 4x4 2D vector
-  std::vector<std::vector<char>> grid(4, std::vector<char>(4));
-  {
-    int index = 0;
-    for (int row = 0; row < 4; ++row) {
-      for (int col = 0; col < 4; ++col) {
-        grid[row][col] = allChars[index++];
-      }
-    }
+  // Convert the path into a grid object, required to solve.
+  std::vector<std::vector<char>> grid;
+  if (!parseGetPath(path, grid)) {
+    writeError();
+    return false;
   }
 
   // 5) Print the 4x4 grid
@@ -164,13 +173,51 @@ bool ServerUtil::handleClient() {
 
   std::cout << s.getFoundWords().size() << "\n";
 
-  write(clientFd, invalid_response, strlen(invalid_response));
+  // Write the result given the answer.
+  std::string data = formatData(s.getFoundWords());
+  std::cout << "Data string: " << data << "\n";
+
+
+  std::string response =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/plain\r\n"
+      "Access-Control-Allow-Origin: http://localhost:3000\r\n"
+      "Access-Control-Allow-Headers: Content-Type, Authorization\r\n"
+      "Content-Length: " + std::to_string(data.size()) + "\r\n"
+      "\r\n" +
+      data;
+
+  write(clientFd, response.c_str(), response.size());
 
   std::cout << "Closing client socket.\n";
-  // Close the client socket
   close(clientFd);
 
   return true;
+}
+
+std::string ServerUtil::formatData(
+    const std::vector<std::vector<std::pair<char, size_t>>>& data) {
+  std::ostringstream oss;
+
+  // Iterate through the outer vector
+  for (size_t rowIndex = 0; rowIndex < data.size(); ++rowIndex) {
+    const auto& row = data[rowIndex];
+
+    // Iterate through the inner vector of (char, size_t) pairs
+    for (size_t colIndex = 0; colIndex < row.size(); ++colIndex) {
+      oss << row[colIndex].first << "," << row[colIndex].second;
+
+      // Add a space if not the last pair in this row
+      if (colIndex + 1 < row.size()) {
+        oss << " ";
+      }
+    }
+
+    // After finishing one row, add a "|"
+    oss << "|";
+  }
+
+  return oss.str();
 }
 
 void ServerUtil::closeServer() { close(serverFd); }

@@ -55,7 +55,11 @@ struct ServerUtil {
   void closeServer();
 
  private:
-  bool parseGetReq();
+  bool parseGetPath(const std::string& path, std::vector<std::vector<char>>& grid);
+
+  void writeError();
+
+  std::string formatData(const std::vector<std::vector<std::pair<char, size_t>>>& data);
 };
 
 #endif  // __UTIL_H__
