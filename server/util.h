@@ -19,17 +19,14 @@ struct ServerUtil {
 
   Solver::EnglishWordTrie trie;
 
-  const char* pong_response =
+  const char* validResponsePrefix =
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: text/plain\r\n"
       "Access-Control-Allow-Origin: http://localhost:3000\r\n"
-      "Access-Control-Allow-Headers: Content-Type, Authorization\r\n"
-      "Content-Length: 4\r\n"
-      "\r\n"
-      "pong";
+      "Access-Control-Allow-Headers: Content-Type, Authorization\r\n";
 
   // Bad request received.
-  const char* invalid_response =
+  const char* invalidResponse =
       "HTTP/1.1 400 Bad Request\r\n"
       "Content-Type: text/plain\r\n"
       "Access-Control-Allow-Origin: http://localhost:3000\r\n"
@@ -57,7 +54,7 @@ struct ServerUtil {
  private:
   bool parseGetPath(const std::string& path, std::vector<std::vector<char>>& grid);
 
-  void writeError();
+  void writeResponse(const char* response);
 
   std::string formatData(const std::vector<std::vector<std::pair<char, size_t>>>& data);
 };

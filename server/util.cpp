@@ -61,8 +61,8 @@ bool ServerUtil::acceptConn() {
   return true;
 }
 
-void ServerUtil::writeError() {
-  write(clientFd, invalid_response, strlen(invalid_response));
+void ServerUtil::writeResponse(const char* response) {
+  write(clientFd, response, strlen(response));
 }
 
 bool ServerUtil::parseGetPath(const std::string& path,
@@ -107,7 +107,7 @@ bool ServerUtil::handleClient() {
   // Read the HTTP request from the client.
   ssize_t bytes_read = read(clientFd, buffer, BUFFER_SIZE - 1);
   if (bytes_read <= 0) {
-    writeError();
+    writeResponse(invalidResponse);
     close(clientFd);
     return false;
   }
@@ -115,13 +115,13 @@ bool ServerUtil::handleClient() {
 
   std::string bufferStr(buffer, bytes_read);
 
-  std::cout << "Message received: " << bufferStr << "\n";
+  std::cout << "Message received:\n" << bufferStr << "\n";
 
   // Parse the first line (the GET request).
   std::size_t endOfLine = bufferStr.find("\r\n");
   if (endOfLine == std::string::npos) {
     std::cout << "Inavlid request (no first line found).\n";
-    writeError();
+    writeResponse(invalidResponse);
     return false;
   }
   std::string firstLine = bufferStr.substr(0, endOfLine);
@@ -136,31 +136,32 @@ bool ServerUtil::handleClient() {
 
   if (!(lineStream >> method >> path >> version)) {
     std::cout << "Invalid request line.\n";
-    writeError();
+    writeResponse(invalidResponse);
     return false;
   }
 
   if (method != "GET") {
     std::cout << "Unsupported HTTP method: " << method << "\n";
-    writeError();
+    writeResponse(invalidResponse);
     return false;
   }
-
-  std::cout << "Path we got is: " << path << "\n";
 
   // Form the board based on the comma separated string.
   if (!path.empty() && path[0] == '/') {
     path = path.substr(1);  // remove the first character '/'
   }
 
+  std::cout << "Board string we got is: " << path << "\n";
+
   // Convert the path into a grid object, required to solve.
   std::vector<std::vector<char>> grid;
   if (!parseGetPath(path, grid)) {
-    writeError();
+    writeResponse(invalidResponse);
     return false;
   }
 
-  // 5) Print the 4x4 grid
+  // Print the grid.
+  std::cout << "Board:\n";
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
       std::cout << grid[row][col] << ' ';
@@ -171,23 +172,18 @@ bool ServerUtil::handleClient() {
   // Solve the board using the solver.
   Solver::WordFinder s(grid, trie);
 
-  std::cout << s.getFoundWords().size() << "\n";
+  std::cout << "Found " << s.getFoundWords().size() << " words for this board.\n";
 
   // Write the result given the answer.
   std::string data = formatData(s.getFoundWords());
   std::cout << "Data string: " << data << "\n";
 
-
   std::string response =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/plain\r\n"
-      "Access-Control-Allow-Origin: http://localhost:3000\r\n"
-      "Access-Control-Allow-Headers: Content-Type, Authorization\r\n"
-      "Content-Length: " + std::to_string(data.size()) + "\r\n"
+      std::string(validResponsePrefix) + "Content-Length: " + std::to_string(data.size()) + "\r\n"
       "\r\n" +
       data;
 
-  write(clientFd, response.c_str(), response.size());
+  writeResponse(response.c_str());
 
   std::cout << "Closing client socket.\n";
   close(clientFd);
@@ -199,11 +195,9 @@ std::string ServerUtil::formatData(
     const std::vector<std::vector<std::pair<char, size_t>>>& data) {
   std::ostringstream oss;
 
-  // Iterate through the outer vector
   for (size_t rowIndex = 0; rowIndex < data.size(); ++rowIndex) {
     const auto& row = data[rowIndex];
 
-    // Iterate through the inner vector of (char, size_t) pairs
     for (size_t colIndex = 0; colIndex < row.size(); ++colIndex) {
       oss << row[colIndex].first << "," << row[colIndex].second;
 
@@ -217,7 +211,10 @@ std::string ServerUtil::formatData(
     oss << "|";
   }
 
-  return oss.str();
+  std::string result = oss.str();
+  result.pop_back();
+
+  return result;
 }
 
 void ServerUtil::closeServer() { close(serverFd); }
