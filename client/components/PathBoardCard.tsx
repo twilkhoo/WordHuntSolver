@@ -26,7 +26,7 @@ export default function PathBoardCard({ pathString }: PathBoardCardProps) {
   const numChars = letters.length;
 
   return (
-    <div className="flex justify-center p-8">
+    <div className="flex justify-center m-4">
       <Card className="p-4 flex flex-row items-center gap-6">
         {/* Left Side: word name + number of chars */}
         <div className="flex flex-col min-w-[120px]">

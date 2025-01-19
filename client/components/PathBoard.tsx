@@ -132,20 +132,6 @@ export default function PathBoard({
         width={boardWidth}
         height={boardHeight}
       >
-        <defs>
-          <marker
-            id="arrowhead"
-            markerWidth="6"
-            markerHeight="6"
-            refX="3"
-            refY="3"
-            orient="auto"
-          >
-            {/* White arrowhead (semi-transparent) */}
-            <path d="M0,0 L0,6 L6,3 z" fill="white" fillOpacity={0.6} />
-          </marker>
-        </defs>
-
         {lines.map((line, i) => (
           <line
             key={i}
@@ -156,7 +142,6 @@ export default function PathBoard({
             stroke="white"
             strokeWidth={2}
             strokeOpacity={0.6}
-            markerEnd="url(#arrowhead)"
           />
         ))}
       </svg>
