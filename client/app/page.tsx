@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Grid from "@/components/Grid";
 import { Inter, Montserrat } from "next/font/google"
+import PathBoard from "@/components/PathBoard";
+import PathBoardCard from "@/components/PathBoardCard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,10 +19,14 @@ const montserrat = Montserrat({
 export default function Home() {
 
   const [boardString, setBoardString] = useState("");
+  const [pathsFromServer, setPathsFromServer] = useState<string[]>([]);
 
   const clearBoard = () => {
     setBoardString("");
+    setPathsFromServer([]);
   };
+
+  const pathStr = "p,15 l,11 o,14 n,13 k,10"
 
   return (
     <div>
@@ -34,13 +40,13 @@ export default function Home() {
       </div>
 
       
-      <Grid setBoardString={setBoardString} clearBoard={clearBoard} />
-      {/* Display the board string */}
-      {boardString && (
-        <p className="mt-6 text-lg font-medium">
-          Board: <span className="font-mono">{boardString}</span>
-        </p>
-      )}
+      <Grid setBoardString={setBoardString} clearBoard={clearBoard} onFetchPaths={(paths) => setPathsFromServer(paths)}/>
+
+      <div>
+        {pathsFromServer.map((path, index) => (
+          <PathBoardCard key={index} pathString={path} />
+        ))}
+      </div>
     </div>
   );
 }

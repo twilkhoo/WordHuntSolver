@@ -14,9 +14,10 @@ const roboto = Roboto({
 interface GridProps {
   setBoardString: (boardString: string) => void;
   clearBoard: () => void;
+  onFetchPaths: (paths: string[]) => void;
 }
 
-export default function Grid({ setBoardString, clearBoard }: GridProps) {
+export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridProps) {
   const totalCells = 16;
 
   // State to track the input values
@@ -33,16 +34,32 @@ export default function Grid({ setBoardString, clearBoard }: GridProps) {
   // Check if all inputs are filled
   const isAllFilled = values.every((val) => val !== "");
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     const concatenated = values
       .reduce((acc, curr, idx) => {
         const rowIndex = Math.floor(idx / 4);
         acc[rowIndex] = (acc[rowIndex] || "") + curr;
         return acc;
       }, [] as string[])
-      .join("|")
+      .join(",")
       .toLowerCase();
     console.log(concatenated); // Logs the concatenated string
+
+    
+    try {
+      const res = await fetch(`http://localhost:5000/${concatenated}`);
+      const data = await res.text();
+
+      // data is a giant string separated by "|"
+      // 3) Split
+      const pathStrings = data.split("|").filter((s) => s.trim().length > 0);
+
+      // 4) Pass the resulting array of path strings to the parent
+      onFetchPaths(pathStrings);
+    } catch (err) {
+      console.error("Error fetching from server:", err);
+    }
+
     setBoardString(concatenated);
   };
 
