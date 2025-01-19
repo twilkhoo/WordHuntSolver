@@ -31,11 +31,8 @@ export default function PathBoardCard({ pathString }: PathBoardCardProps) {
         {/* Left Side: word name + number of chars */}
         <div className="flex flex-col min-w-[120px]">
           <CardHeader className="p-0">
-            <CardTitle className="text-lg mb-2">Word Info</CardTitle>
+            <CardTitle className="text-lg mb-2">{word}</CardTitle>
           </CardHeader>
-          <p className="text-sm mb-1">
-            <span className="font-semibold">Word:</span> {word}
-          </p>
           <p className="text-sm">
             <span className="font-semibold">Chars:</span> {numChars}
           </p>
