@@ -162,8 +162,8 @@ bool ServerUtil::handleClient() {
 
   // Print the grid.
   std::cout << "Board:\n";
-  for (int row = 0; row < 4; ++row) {
-    for (int col = 0; col < 4; ++col) {
+  for (int row = 0; row < grid.size(); ++row) {
+    for (int col = 0; col < grid[0].size(); ++col) {
       std::cout << grid[row][col] << ' ';
     }
     std::cout << '\n';
