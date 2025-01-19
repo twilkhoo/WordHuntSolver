@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -23,12 +23,18 @@ export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridP
   // State to track the input values
   const [values, setValues] = useState(Array(totalCells).fill(""));
 
+  const inputRefs = useRef<HTMLInputElement[]>([]);
+
   // Update input value and handle state
   const handleInputChange = (index: number, value: string) => {
     const newValue = value.replace(/[^a-zA-Z]/g, "").toUpperCase();
     const newValues = [...values];
     newValues[index] = newValue;
     setValues(newValues);
+
+    if (value.length === 1 && index < totalCells - 1) {
+      inputRefs.current[index + 1]?.focus();
+    }
   };
 
   // Check if all inputs are filled
@@ -75,6 +81,7 @@ export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridP
         {Array.from({ length: totalCells }).map((_, index) => (
           <Input
             key={index}
+            ref={(el) => {inputRefs.current[index] = el!}}
             type="text"
             maxLength={1}
             className={`${roboto.className} !text-2xl aspect-square text-center w-20 h-20`}
