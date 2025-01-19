@@ -42,7 +42,7 @@ export default function Home() {
       
       <Grid setBoardString={setBoardString} clearBoard={clearBoard} onFetchPaths={(paths) => setPathsFromServer(paths)}/>
 
-      <div>
+      <div className="grid grid-cols-3 gap-2 mt-4">
         {pathsFromServer.map((path, index) => (
           <PathBoardCard key={index} pathString={path} />
         ))}

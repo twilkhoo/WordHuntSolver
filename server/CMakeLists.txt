@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add the executable
-add_executable(solver 
+add_executable(server 
   solver.cpp
   util.cpp
   server.cpp
@@ -14,4 +14,4 @@ add_executable(solver
 
 # Link pthread library
 find_package(Threads REQUIRED)
-target_link_libraries(solver PRIVATE Threads::Threads)
+target_link_libraries(server PRIVATE Threads::Threads)

@@ -51,17 +51,18 @@ void WordFinder::iterativeFind(
     std::shared_ptr<EnglishWordTrie::TrieNode> curNode;
 
     std::vector<std::pair<char, size_t>> curWord;
+    std::string curWordStr;
     std::unordered_set<size_t> seen;
   };
 
   std::stack<DFSFrame> stack;
 
   // Push the initial position onto the stack.
-  stack.push({startRow, startCol, rootNode, {}, {}});
+  stack.push({startRow, startCol, rootNode, {}, "", {}});
 
   while (!stack.empty()) {
     // Pop the topmost frame.
-    auto [row, col, curNode, curWord, seen] = stack.top();
+    auto [row, col, curNode, curWord, curWordStr, seen] = stack.top();
     stack.pop();
 
     // If no node, continue.
@@ -78,11 +79,16 @@ void WordFinder::iterativeFind(
 
     seen.insert(idx);
     curWord.emplace_back(c, idx);
+    curWordStr += c;
 
     // Found a word.
     if (nextNode->end) {
       std::lock_guard<std::mutex> lock(foundWordsMutex);
-      foundWords.push_back(curWord);
+      
+      if (!foundWordsSet.contains(curWordStr)) {
+        foundWords.push_back(curWord);
+        foundWordsSet.insert(curWordStr);
+      }
     }
 
     // Add neighbors.
@@ -100,7 +106,7 @@ void WordFinder::iterativeFind(
           continue;
 
         stack.push({static_cast<size_t>(nextRow), static_cast<size_t>(nextCol),
-                    nextNode, curWord, seen});
+                    nextNode, curWord, curWordStr, seen});
       }
     }
   }

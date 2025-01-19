@@ -39,6 +39,10 @@ class WordFinder {
   // The result vector.
   std::vector<std::vector<std::pair<char, size_t>>> foundWords;
 
+  // A set to store what we've seen so far.
+  std::unordered_set<std::string> foundWordsSet;
+
+
   // Iterative algorithm to search for words in the board (given the word trie).
   void iterativeFind(const std::vector<std::vector<char>>& board,
                      const std::shared_ptr<EnglishWordTrie::TrieNode> rootNode,
