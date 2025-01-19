@@ -26,8 +26,6 @@ export default function Home() {
     setPathsFromServer([]);
   };
 
-  const pathStr = "p,15 l,11 o,14 n,13 k,10"
-
   return (
     <div>
       <div className="flex flex-col items-center mt-20">
@@ -40,12 +38,20 @@ export default function Home() {
       </div>
 
       
-      <Grid setBoardString={setBoardString} clearBoard={clearBoard} onFetchPaths={(paths) => setPathsFromServer(paths)}/>
+      <Grid setBoardString={setBoardString} clearBoard={clearBoard} onFetchPaths={(paths) => {
+        const filteredPaths = paths.filter((path) => {
+          const characters = path.split(" ").map((p) => p.split(",")[0]).join("");
+          return characters.length >= 3; // Keep only paths with 3+ characters
+        });
+        setPathsFromServer(filteredPaths)
+      }}/> 
 
-      <div className="grid grid-cols-3">
-        {pathsFromServer.map((path, index) => (
-          <PathBoardCard key={index} pathString={path} />
-        ))}
+      <div className="flex justify-center">
+        <div className="grid grid-cols-3">
+          {pathsFromServer.map((path, index) => (
+            <PathBoardCard key={index} pathString={path} />
+          ))}
+        </div>
       </div>
     </div>
   );

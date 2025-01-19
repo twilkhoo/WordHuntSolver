@@ -113,7 +113,7 @@ export default function PathBoard({
             <div
               key={idx}
               className={`rounded-lg border border-gray-300 flex items-center justify-center 
-                ${isStart ? "bg-yellow-500 text-white" : ""} 
+                ${isStart ? "bg-slate-500 text-white" : ""} 
               `}
             >
               {stepForCell && (
