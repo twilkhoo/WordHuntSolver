@@ -52,16 +52,16 @@ bool ServerUtil::listenConn() {
   return true;
 }
 
-bool ServerUtil::acceptConn() {
+std::pair<bool, int> ServerUtil::acceptConn() {
   socklen_t addrLen = sizeof(address);
 
-  clientFd = accept(serverFd, (struct sockaddr*)&address, &addrLen);
-  if (clientFd < 0) return false;
+  int clientFd = accept(serverFd, (struct sockaddr*)&address, &addrLen);
+  if (clientFd < 0) return {false, 0};
 
-  return true;
+  return {true, clientFd};
 }
 
-void ServerUtil::writeResponse(const char* response) {
+void ServerUtil::writeResponse(int clientFd, const char* response) {
   write(clientFd, response, strlen(response));
 }
 
@@ -98,7 +98,7 @@ bool ServerUtil::parseGetPath(const std::string& path,
   return true;
 }
 
-bool ServerUtil::handleClient() {
+bool ServerUtil::handleClient(int clientFd) {
   // Clear the buffer and read data from the client
   memset(buffer, 0, BUFFER_SIZE);
 
@@ -107,7 +107,7 @@ bool ServerUtil::handleClient() {
   // Read the HTTP request from the client.
   ssize_t bytes_read = read(clientFd, buffer, BUFFER_SIZE - 1);
   if (bytes_read <= 0) {
-    writeResponse(invalidResponse);
+    writeResponse(clientFd, invalidResponse);
     close(clientFd);
     return false;
   }
@@ -121,7 +121,7 @@ bool ServerUtil::handleClient() {
   std::size_t endOfLine = bufferStr.find("\r\n");
   if (endOfLine == std::string::npos) {
     std::cout << "Inavlid request (no first line found).\n";
-    writeResponse(invalidResponse);
+    writeResponse(clientFd, invalidResponse);
     return false;
   }
   std::string firstLine = bufferStr.substr(0, endOfLine);
@@ -136,13 +136,13 @@ bool ServerUtil::handleClient() {
 
   if (!(lineStream >> method >> path >> version)) {
     std::cout << "Invalid request line.\n";
-    writeResponse(invalidResponse);
+    writeResponse(clientFd, invalidResponse);
     return false;
   }
 
   if (method != "GET") {
     std::cout << "Unsupported HTTP method: " << method << "\n";
-    writeResponse(invalidResponse);
+    writeResponse(clientFd, invalidResponse);
     return false;
   }
 
@@ -156,7 +156,7 @@ bool ServerUtil::handleClient() {
   // Convert the path into a grid object, required to solve.
   std::vector<std::vector<char>> grid;
   if (!parseGetPath(path, grid)) {
-    writeResponse(invalidResponse);
+    writeResponse(clientFd, invalidResponse);
     return false;
   }
 
@@ -183,7 +183,7 @@ bool ServerUtil::handleClient() {
       "\r\n" +
       data;
 
-  writeResponse(response.c_str());
+  writeResponse(clientFd, response.c_str());
 
   std::cout << "Closing client socket.\n";
   close(clientFd);

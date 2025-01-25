@@ -13,7 +13,6 @@ struct ServerUtil {
   unsigned int port;
 
   int serverFd;
-  int clientFd;
   struct sockaddr_in address;
   char buffer[BUFFER_SIZE];
 
@@ -45,16 +44,16 @@ struct ServerUtil {
 
   bool listenConn();
 
-  bool acceptConn();
+  std::pair<bool, int> acceptConn();
 
-  bool handleClient();
+  bool handleClient(int clientFd);
 
   void closeServer();
 
  private:
   bool parseGetPath(const std::string& path, std::vector<std::vector<char>>& grid);
 
-  void writeResponse(const char* response);
+  void writeResponse(int clientFd, const char* response);
 
   std::string formatData(const std::vector<std::vector<std::pair<char, size_t>>>& data);
 };

@@ -39,13 +39,17 @@ int main(int argc, char** argv) {
 
   while (1) {
     // Accept a client connection.
-    if (!serverObj.acceptConn()) continue;
+    auto [connSuccess, clientFd] = serverObj.acceptConn();
+    if (!connSuccess) continue;
 
     std::cout << "Accepted a client.\n";
 
-    if (!serverObj.handleClient()) {
-      std::cout << "Error in processing this client.\n";
-    }
+    std::thread clientThread([&serverObj, clientFd]() {
+      if (!serverObj.handleClient(clientFd)) {
+        std::cout << "Error in processing this client.\n";
+      }
+    });
+    clientThread.join();
   }
 
   // Close the server socket
