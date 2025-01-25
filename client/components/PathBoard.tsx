@@ -8,20 +8,12 @@ type Step = {
 };
 
 interface PathBoardProps {
-  /**
-   * Example: "p,15 l,11 o,14 n,13 k,10"
-   * Means we have steps:
-   *   p at cell 15,
-   *   l at cell 11,
-   *   o at cell 14, etc.
-   */
   pathString: string;
 
-  // Optional customizations
   rows?: number;
   cols?: number;
   cellSize?: number; // px
-  cellGap?: number;  // px
+  cellGap?: number; // px
 }
 
 export default function PathBoard({
@@ -31,13 +23,13 @@ export default function PathBoard({
   cellSize = 50,
   cellGap = 10,
 }: PathBoardProps) {
-  // Total board dimensions, factoring in gap
+  // Total board dimensions, factoring in gap.
   const boardWidth = cols * cellSize + (cols - 1) * cellGap;
   const boardHeight = rows * cellSize + (rows - 1) * cellGap;
 
-  // 1. Parse the path string
+  // Parse the path string.
   const steps: Step[] = useMemo(() => {
-    // e.g. "p,15 l,11 o,14..."
+    // e.g. "p,15 l,11 o,14...".
     return pathString.split(" ").map((part) => {
       const [char, cellStr] = part.split(",");
       return {
@@ -47,12 +39,11 @@ export default function PathBoard({
     });
   }, [pathString]);
 
-  // 2. Convert cellNumber to row/col & compute center for each step
+  // Convert cellNumber to row/col & compute center for each step.
   const stepPoints = useMemo(() => {
     return steps.map((s) => {
       const r = Math.floor(s.cell / cols);
       const c = s.cell % cols;
-      // Top-left corner of cell
       const x = c * (cellSize + cellGap);
       const y = r * (cellSize + cellGap);
 
@@ -66,7 +57,7 @@ export default function PathBoard({
     });
   }, [steps, cols, cellSize, cellGap]);
 
-  // 3. Build arrow lines from step i to step i+1
+  // Build lines from step i to step i+1.
   const lines = stepPoints.slice(0, -1).map((start, i) => {
     const end = stepPoints[i + 1];
     return {
@@ -77,17 +68,15 @@ export default function PathBoard({
     };
   });
 
-  // The first step is our "start" cell
+  // The first step is our "start" cell.
   const startRow = stepPoints[0]?.row;
   const startCol = stepPoints[0]?.col;
 
   return (
-    <div className="relative" style={{ width: boardWidth, height: boardHeight }}>
-      {/* 
-        The 4x4 "grid" using CSS grid. 
-        We set rows and columns to fixed cellSize, 
-        and add a dynamic gap of cellGap. 
-      */}
+    <div
+      className="relative"
+      style={{ width: boardWidth, height: boardHeight }}
+    >
       <div
         className="absolute top-0 left-0"
         style={{
@@ -105,9 +94,7 @@ export default function PathBoard({
           const stepForCell = stepPoints.find(
             (p) => p.row === r && p.col === c
           );
-          // highlight start cell
-          const isStart =
-            r === startRow && c === startCol;
+          const isStart = r === startRow && c === startCol;
 
           return (
             <div
@@ -126,7 +113,6 @@ export default function PathBoard({
         })}
       </div>
 
-      {/* SVG overlay for translucent white arrows */}
       <svg
         className="absolute top-0 left-0 pointer-events-none"
         width={boardWidth}

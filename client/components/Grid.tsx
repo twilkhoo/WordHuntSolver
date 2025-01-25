@@ -3,7 +3,12 @@
 import React, { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Roboto } from "next/font/google";
 
 const roboto = Roboto({
@@ -17,15 +22,19 @@ interface GridProps {
   onFetchPaths: (paths: string[]) => void;
 }
 
-export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridProps) {
+export default function Grid({
+  setBoardString,
+  clearBoard,
+  onFetchPaths,
+}: GridProps) {
   const totalCells = 16;
 
-  // State to track the input values
+  // State to track the input values.
   const [values, setValues] = useState(Array(totalCells).fill(""));
 
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
-  // Update input value and handle state
+  // Update input value and handle state.
   const handleInputChange = (index: number, value: string) => {
     const newValue = value.replace(/[^a-zA-Z]/g, "").toUpperCase();
     const newValues = [...values];
@@ -37,7 +46,7 @@ export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridP
     }
   };
 
-  // Check if all inputs are filled
+  // Check if all inputs are filled.
   const isAllFilled = values.every((val) => val !== "");
 
   const handleButtonClick = async () => {
@@ -49,18 +58,13 @@ export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridP
       }, [] as string[])
       .join(",")
       .toLowerCase();
-    console.log(concatenated); // Logs the concatenated string
 
-    
     try {
       const res = await fetch(`http://localhost:5000/${concatenated}`);
       const data = await res.text();
 
-      // data is a giant string separated by "|"
-      // 3) Split
       const pathStrings = data.split("|").filter((s) => s.trim().length > 0);
 
-      // 4) Pass the resulting array of path strings to the parent
       onFetchPaths(pathStrings);
     } catch (err) {
       console.error("Error fetching from server:", err);
@@ -71,17 +75,18 @@ export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridP
 
   const handleClear = () => {
     setValues(Array(totalCells).fill(""));
-    clearBoard(); // Clear the board string in the parent component
+    clearBoard(); // Clear the board string in the parent component.
   };
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
-      {/* 4x4 Grid */}
       <div className="grid grid-cols-4 gap-4 mb-4">
         {Array.from({ length: totalCells }).map((_, index) => (
           <Input
             key={index}
-            ref={(el) => {inputRefs.current[index] = el!}}
+            ref={(el) => {
+              inputRefs.current[index] = el!;
+            }}
             type="text"
             maxLength={1}
             className={`${roboto.className} !text-2xl aspect-square text-center w-20 h-20`}
@@ -91,7 +96,6 @@ export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridP
         ))}
       </div>
 
-      {/* Tooltip and Button */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -114,11 +118,11 @@ export default function Grid({ setBoardString, clearBoard, onFetchPaths }: GridP
       </TooltipProvider>
 
       <Button
-          onClick={handleClear}
-          variant="outline"
-          className="px-6 py-2 text-lg font-semibold"
-        >
-          Clear
+        onClick={handleClear}
+        variant="outline"
+        className="px-6 py-2 text-lg font-semibold"
+      >
+        Clear
       </Button>
     </div>
   );
