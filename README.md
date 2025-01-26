@@ -14,7 +14,7 @@
 	<!-- default option, no dependency badges. -->
 </p>
 <br>
-![alt text](image.png)
+
 ##  Table of Contents
 
 - [ Overview](#overview)
