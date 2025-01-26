@@ -56,6 +56,7 @@ Frontend built with:
 
 Below is a working demo of the frontend, and backend.
 
+https://github.com/user-attachments/assets/4a1b527e-ba37-4dd0-ab96-c5251570a8c0
 
 
 ##  Project Structure
