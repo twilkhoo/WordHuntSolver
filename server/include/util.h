@@ -51,11 +51,11 @@ struct ServerUtil {
   void closeServer();
 
  private:
-  bool parseGetPath(const std::string& path, std::vector<std::vector<char>>& grid);
+  bool parseGetPath(const std::string& path, tjs::vector<tjs::vector<char>>& grid);
 
   void writeResponse(int clientFd, const char* response);
 
-  std::string formatData(const std::vector<std::vector<std::pair<char, size_t>>>& data);
+  std::string formatData(const tjs::vector<tjs::vector<std::pair<char, size_t>>>& data);
 };
 
 #endif  // __UTIL_H__

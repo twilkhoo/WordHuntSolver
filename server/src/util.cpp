@@ -14,7 +14,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include <vector>
+#include "vector/vector.h"
 
 #include "solver.h"
 
@@ -66,10 +66,11 @@ void ServerUtil::writeResponse(int clientFd, const char* response) {
 }
 
 bool ServerUtil::parseGetPath(const std::string& path,
-                              std::vector<std::vector<char>>& grid) {
+                              tjs::vector<tjs::vector<char>>& grid) {
+
   // Path is of form "abcd,efgh,ijkl,mnop.
   // Split by commas into lines.
-  std::vector<std::string> boardRowStrs;
+  tjs::vector<std::string> boardRowStrs;
   std::stringstream ss(path);
   std::string piece;
   while (std::getline(ss, piece, ',')) {
@@ -88,12 +89,19 @@ bool ServerUtil::parseGetPath(const std::string& path,
 
   // Split the row chars into vectors, creating the 2d grid.
   for (const auto& row : boardRowStrs) {
-    std::vector<char> rowChars;
+    tjs::vector<char> rowChars;
     for (char c : row) {
       rowChars.push_back(c);
     }
     grid.push_back(rowChars);
   }
+
+  // for (auto row : grid) {
+  //   for (auto cell : row) {
+  //     std::cout << cell << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
 
   return true;
 }
@@ -154,7 +162,7 @@ bool ServerUtil::handleClient(int clientFd) {
   std::cout << "Board string we got is: " << path << "\n";
 
   // Convert the path into a grid object, required to solve.
-  std::vector<std::vector<char>> grid;
+  tjs::vector<tjs::vector<char>> grid;
   if (!parseGetPath(path, grid)) {
     writeResponse(clientFd, invalidResponse);
     return false;
@@ -192,7 +200,7 @@ bool ServerUtil::handleClient(int clientFd) {
 }
 
 std::string ServerUtil::formatData(
-    const std::vector<std::vector<std::pair<char, size_t>>>& data) {
+    const tjs::vector<tjs::vector<std::pair<char, size_t>>>& data) {
   std::ostringstream oss;
 
   for (size_t rowIndex = 0; rowIndex < data.size(); ++rowIndex) {

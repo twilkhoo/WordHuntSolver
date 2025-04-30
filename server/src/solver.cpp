@@ -9,7 +9,6 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
-#include <vector>
 
 namespace Solver {
 
@@ -42,7 +41,7 @@ EnglishWordTrie::EnglishWordTrie(std::string inputFile)
 }
 
 void WordFinder::iterativeFind(
-    const std::vector<std::vector<char>>& board,
+    const tjs::vector<tjs::vector<char>>& board,
     const std::shared_ptr<EnglishWordTrie::TrieNode> rootNode,
     const size_t startRow, const size_t startCol) {
   struct DFSFrame {
@@ -50,7 +49,7 @@ void WordFinder::iterativeFind(
     size_t col;
     std::shared_ptr<EnglishWordTrie::TrieNode> curNode;
 
-    std::vector<std::pair<char, size_t>> curWord;
+    tjs::vector<std::pair<char, size_t>> curWord;
     std::string curWordStr;
     std::unordered_set<size_t> seen;
   };
@@ -112,10 +111,10 @@ void WordFinder::iterativeFind(
   }
 }
 
-WordFinder::WordFinder(const std::vector<std::vector<char>>& board,
+WordFinder::WordFinder(const tjs::vector<tjs::vector<char>>& board,
                    const EnglishWordTrie& trie)
     : numRows{board.size()}, numCols{board[0].size()} {
-  std::vector<std::thread> threads;
+  tjs::vector<std::thread> threads;
   threads.reserve(numRows * numCols);
 
   for (size_t row = 0; row < numRows; row++) {
@@ -129,16 +128,16 @@ WordFinder::WordFinder(const std::vector<std::vector<char>>& board,
     t.join();
   }
 
-  sort(foundWords.begin(), foundWords.end(),
-       [&](const std::vector<std::pair<char, size_t>>& lhs,
-           const std::vector<std::pair<char, size_t>>& rhs) {
+  std::sort(foundWords.begin(), foundWords.end(),
+       [&](const tjs::vector<std::pair<char, size_t>>& lhs,
+           const tjs::vector<std::pair<char, size_t>>& rhs) {
          return lhs.size() >
                 rhs.size();  // Sort in descending-by-length order (longer words
                              // are worth more, and are placed first).
        });
 }
 
-std::vector<std::vector<std::pair<char, size_t>>> WordFinder::getFoundWords()
+tjs::vector<tjs::vector<std::pair<char, size_t>>> WordFinder::getFoundWords()
     const {
   return foundWords;
 }

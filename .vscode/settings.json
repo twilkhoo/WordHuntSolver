@@ -55,6 +55,8 @@
     "map": "cpp",
     "set": "cpp",
     "iomanip": "cpp",
-    "filesystem": "cpp"
-  }
+    "filesystem": "cpp",
+    "*.tpp": "cpp"
+  },
+  "cmake.sourceDirectory": "/home/twilkhoo/code/wordhuntsolver/server"
 }

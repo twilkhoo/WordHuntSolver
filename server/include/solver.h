@@ -11,7 +11,7 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
-#include <vector>
+#include "vector/vector.h"
 
 namespace Solver {
 
@@ -37,22 +37,22 @@ class WordFinder {
   std::mutex foundWordsMutex;
 
   // The result vector.
-  std::vector<std::vector<std::pair<char, size_t>>> foundWords;
+  tjs::vector<tjs::vector<std::pair<char, size_t>>> foundWords;
 
   // A set to store what we've seen so far.
   std::unordered_set<std::string> foundWordsSet;
 
 
   // Iterative algorithm to search for words in the board (given the word trie).
-  void iterativeFind(const std::vector<std::vector<char>>& board,
+  void iterativeFind(const tjs::vector<tjs::vector<char>>& board,
                      const std::shared_ptr<EnglishWordTrie::TrieNode> rootNode,
                      const size_t startRow, const size_t startCol);
 
  public:
-  WordFinder(const std::vector<std::vector<char>>& board,
+  WordFinder(const tjs::vector<tjs::vector<char>>& board,
          const EnglishWordTrie& trie);
 
-  std::vector<std::vector<std::pair<char, size_t>>> getFoundWords() const;
+  tjs::vector<tjs::vector<std::pair<char, size_t>>> getFoundWords() const;
 };
 
 }  // namespace Solver
