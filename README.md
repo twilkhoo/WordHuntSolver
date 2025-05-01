@@ -43,6 +43,7 @@ The game board is entered in as a 4x4 grid on the frontend. After pressing submi
 
 Backend built with:
 - C++ 20
+- Custom STL, check out the full project [here](https://github.com/twilkhoo/stl)
 - Multithreading to support multiple concurrent clients, and for word finding using a backtracking algorithm
 - TCP raw sockets for reliable message transfer
 - HTTP request/response format
@@ -94,18 +95,19 @@ https://github.com/user-attachments/assets/5927203d-d4d9-4bff-a1a6-c88f7856c7ca
     │   ├── postcss.config.mjs
     │   ├── tailwind.config.ts
     │   └── tsconfig.json
-    └── server
-        ├── CMakeLists.txt
-        ├── assets
-        │   └── words_alpha.txt
-        ├── main.cpp
-        ├── notes.txt
-        ├── server.cpp
-        ├── solver
-        ├── solver.cpp
-        ├── solver.h
-        ├── util.cpp
-        └── util.h
+    ├── server
+    │   ├── CMakeLists.txt
+    │   ├── assets
+    │   │   └── words_alpha.txt
+    │   ├── main.cpp
+    │   ├── notes.txt
+    │   ├── server.cpp
+    │   ├── solver
+    │   ├── solver.cpp
+    │   ├── solver.h
+    │   ├── util.cpp
+    │   └── util.h
+    └── stl
 ```
 
 ##  Getting Started
@@ -169,7 +171,6 @@ From the build folder just made, run one of: ./server to use port 5000 for the s
 
 ##  Future Improvements
 
-- Add a custom STL, just for fun.
 - Support different board types beyond the standard 4x4.
 
 ##  License
